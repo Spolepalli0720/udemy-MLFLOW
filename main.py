@@ -45,19 +45,18 @@ if __name__ == "__main__":
 
     alpha = args.alpha
     l1_ratio = args.l1_ratio
-    exp=mlflow.set_experiment(experiment_name="elasticnet")
+    #specify the location for tracking
+    mlflow.set_tracking_uri(uri="./urimlruns")
+    print("tracking location",mlflow.get_tracking_uri())
+    exp=mlflow.set_experiment(experiment_name="uri_elasticnet")
     with mlflow.start_run(experiment_id=exp.experiment_id) :
         lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
         lr.fit(train_x, train_y)
-
         predicted_qualities = lr.predict(test_x)
-
         (rmse, mae, r2) = eval_metrics(test_y, predicted_qualities)
-
         print("Elasticnet model (alpha={:f}, l1_ratio={:f}):".format(alpha, l1_ratio))
         print("  RMSE: %s" % rmse)
         print("  MAE: %s" % mae)
-        print("  R2: %s" % r2)
         print("  R2: %s" % r2)
         mlflow.log_param("alpha", alpha)
         mlflow.log_param("l1_ratio", l1_ratio)
