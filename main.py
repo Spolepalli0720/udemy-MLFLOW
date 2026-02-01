@@ -49,7 +49,8 @@ if __name__ == "__main__":
     mlflow.set_tracking_uri(uri="./urimlruns")
     print("tracking location",mlflow.get_tracking_uri())
     exp=mlflow.set_experiment(experiment_name="uri_elasticnet")
-    with mlflow.start_run(experiment_id=exp.experiment_id) :
+    # with mlflow.start_run(experiment_id=exp.experiment_id) :
+    with mlflow.start_run():
         lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
         lr.fit(train_x, train_y)
         predicted_qualities = lr.predict(test_x)
@@ -64,3 +65,11 @@ if __name__ == "__main__":
         mlflow.log_metric("mae", mae)
         mlflow.log_metric("r2", r2)
         mlflow.sklearn.log_model(lr, name="model")
+        present_run=mlflow.active_run()
+        print("active run is ",present_run.info.run_name)
+        print("active run is ", present_run.info.run_id)
+        mlflow.end_run()
+    #catch if last active run is placed between start run and end run we will get the existing run.
+    last_run = mlflow.last_active_run()
+    print("Last run name:",last_run.info.run_name)
+    print("Last run id:", last_run.info.run_id)
