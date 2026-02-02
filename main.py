@@ -46,9 +46,9 @@ if __name__ == "__main__":
     alpha = args.alpha
     l1_ratio = args.l1_ratio
     #specify the location for tracking
-    mlflow.set_tracking_uri(uri="./urimlruns")
+    # mlflow.set_tracking_uri(uri="./urimlruns")
     print("tracking location",mlflow.get_tracking_uri())
-    exp=mlflow.set_experiment(experiment_name="uri_elasticnet")
+    exp=mlflow.set_experiment(experiment_name="params_exp")
     # with mlflow.start_run(experiment_id=exp.experiment_id) :
     with mlflow.start_run():
         lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
@@ -59,11 +59,17 @@ if __name__ == "__main__":
         print("  RMSE: %s" % rmse)
         print("  MAE: %s" % mae)
         print("  R2: %s" % r2)
-        mlflow.log_param("alpha", alpha)
-        mlflow.log_param("l1_ratio", l1_ratio)
-        mlflow.log_metric("rmse", rmse)
-        mlflow.log_metric("mae", mae)
-        mlflow.log_metric("r2", r2)
+        params={
+            "alpha": alpha,
+            "l1_ratio": l1_ratio,
+        }
+        mlflow.log_params(params)
+        metrics = {
+            "rmse": rmse,
+            "mae": mae,
+            "r2": r2,
+        }
+        mlflow.log_metrics(metrics)
         mlflow.sklearn.log_model(lr, name="model")
         present_run=mlflow.active_run()
         print("active run is ",present_run.info.run_name)
